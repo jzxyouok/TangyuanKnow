@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}唐院知乎 - 确认帐号{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>
+        Hello, {{ current_user.nickname }}!
+    </h1>
+    <h3>我们还没有确认您的邮箱.</h3>
+    <p>
+        请登录您的邮箱并点击我们发给您的确认邮件
+        查看邮件是否被拦截。
+    </p>
+    <p>
+        或者可以点击下方链接重新发送一封邮件
+        <a href="{{ url_for('auth.resend_confirmation') }}">Click here</a>
+    </p>
+</div>
+{% endblock %}

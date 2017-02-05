@@ -1,0 +1,14 @@
+亲爱的 {{ user.nickname }}，
+    欢迎来到唐院知乎！
+
+    balabalabala
+
+    为了确认您的身份，请点击下方链接：
+
+    {{ url_for('auth.confirm', token=token, _external=True) }}
+
+    真诚的，
+
+    唐院知乎小组
+
+    注意：请不要回复此邮箱。
