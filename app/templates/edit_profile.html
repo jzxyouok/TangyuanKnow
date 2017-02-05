@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}编辑个人信息 - 唐院知乎{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>个人信息编辑</h1>
+</div>
+<div class="col-md-4">
+    {{ wtf.quick_form(form) }}
+</div>
+{% endblock %}

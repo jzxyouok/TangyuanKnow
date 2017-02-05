@@ -2,6 +2,8 @@
 # My stuff
 *.sqlite
 password.txt
+.idea
+1.py
 
 ### Python template
 # Byte-compiled / optimized / DLL files
