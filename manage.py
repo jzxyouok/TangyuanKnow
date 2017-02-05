@@ -4,7 +4,7 @@ from app.models import User, Role
 from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 
-app = create_app(os.getenv('MEETBOT_CONFIG') or 'default')
+app = create_app(os.getenv('TYKNOW_CONFIG') or 'default')
 manager = Manager(app)
 migrate = Migrate(app, db)
 

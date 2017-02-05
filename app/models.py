@@ -14,11 +14,11 @@ import hashlib
 
 
 class Permission:
-    FOLLOW = 0x01
-    COMMENT = 0x02
-    WRITE_ARTICLES = 0x04
-    MODERATE_COMMENT = 0x08
-    ADMINISTER = 0x80
+    FOLLOW = 0x01  # 关注
+    COMMENT = 0x02  # 评论
+    WRITE_ARTICLES = 0x04  # 发布文章
+    MODERATE_COMMENT = 0x08  # 修改评论(管理员)
+    ADMINISTER = 0x80  # 总舵主
 
 
 @login_manager.user_loader
@@ -64,33 +64,12 @@ class Role(db.Model):
         db.session.commit()
 
 
-class Meet(db.Model):
-    __tablename__ = 'meets'
-    user_sender_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    user_affirmant_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    confirmed = db.Column(db.Integer, default=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    confirmed_timestamp = db.Column(db.DateTime, default=None)
-
-    @staticmethod
-    def generate_fake(count=100):
-        from random import seed, randint
-        from sqlalchemy.exc import IntegrityError
-        import forgery_py
-
-        seed()
-        user_count = User.query.count()
-        for i in range(count):
-            u = User.query.offset(randint(0, user_count - 1)).first()
-            u2 = User.query.offset(randint(0, user_count - 1)).first()
-            m = Meet(sender=u,
-                     affirmant=u2,
-                     timestamp=forgery_py.date.date(True))
-            db.session.add(m)
-            try:
-                db.session.commit()
-            except IntegrityError:
-                db.session.rollback()
+class Post(db.Model):
+    __tablename__ = 'posts'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
 class User(db.Model, UserMixin):
@@ -112,16 +91,7 @@ class User(db.Model, UserMixin):
 
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
 
-    meet_sender = db.relationship('Meet',
-                                     foreign_keys=[Meet.user_sender_id],
-                                     backref=db.backref('sender', lazy='joined'),
-                                     lazy='dynamic',
-                                     cascade='all, delete-orphan')
-    meet_affirmant = db.relationship('Meet',
-                                     foreign_keys=[Meet.user_affirmant_id],
-                                     backref=db.backref('affirmant', lazy='joined'),
-                                     lazy='dynamic',
-                                     cascade='all, delete-orphan')
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
 
     @property
     def password(self):
