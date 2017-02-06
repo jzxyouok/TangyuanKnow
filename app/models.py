@@ -64,12 +64,41 @@ class Role(db.Model):
         db.session.commit()
 
 
-class Post(db.Model):
-    __tablename__ = 'posts'
+class Banning(db.Model):
+    # 封禁理由
+    __tablename__ = 'bannings'
     id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(64), index=True)
+    body = db.Column(db.String(128))
+
+    # questions = db.relationship()
+
+
+class Question(db.Model):
+    __tablename__ = 'questions'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(128), index=True)
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    # ban = db.Column(db.)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+
+class Answer(db.Model):
+    __tablename__ = 'answers'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True,default=datetime.utcnow)
+    answerer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    voting = db.relationship('Vote', backref='voting', lazy='dynamic')
+
+
+class Vote(db.Model):
+    __tablename__ = 'votes'
+    voter_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    voted_answer_id = db.Column(db.Integer, db.ForeignKey('answers.id'), primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class User(db.Model, UserMixin):
@@ -91,7 +120,9 @@ class User(db.Model, UserMixin):
 
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
 
-    posts = db.relationship('Post', backref='author', lazy='dynamic')
+    questions = db.relationship('Question', backref='author', lazy='dynamic')
+    answers = db.relationship('Answer', backref='answerer', lazy='dynamic')
+    voted_answers = db.relationship('Vote', backref='voted_answer', lazy='dynamic')
 
     @property
     def password(self):
@@ -155,6 +186,16 @@ class User(db.Model, UserMixin):
                hashlib.md5(self.email.encode('utf-8')).hexdigest()
         return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
             url=url, hash=hash, default=default, rating=rating, size=size)
+
+    def vote_answer(self, answer):
+        vote = self.voted_answers.filter_by(voted_answer_id=answer.id).first()
+        if vote is None:
+            vote = Vote(voted_answer=self, voting=answer)
+            db.session.add(vote)
+            return True
+        else:
+            db.session.delete(vote)
+            return False
 
     @staticmethod
     def generate_fake(count=100):

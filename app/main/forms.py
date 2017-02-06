@@ -46,3 +46,7 @@ class EditProfileAdminForm(FlaskForm):
         if field.data != self.user.username and \
                 User.query.filter_by(nickname=field.data).first():
             raise ValidationError('昵称已被占用.')
+
+
+class PostForm(FlaskForm):
+    body = TextAreaField('你想问什么？')

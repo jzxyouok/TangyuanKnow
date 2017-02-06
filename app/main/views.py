@@ -3,11 +3,11 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-from flask import redirect, session, url_for, render_template, flash, abort, request, current_app
+from flask import redirect, session, url_for, render_template, flash, abort, request, current_app, jsonify
 
 from . import main, forms
 from .. import db
-from ..models import User, Permission, Role
+from ..models import User, Permission, Role, Answer, Question, Vote
 from ..decorators import permission_required, admin_required
 from flask_login import login_required, current_user
 from .forms import EditProfileForm, EditProfileAdminForm
@@ -71,3 +71,27 @@ def edit_profile_admin(id):
     form.location.data = user.location
     form.about_me.data = user.about_me
     return render_template('edit_profile.html', form=form, user=user)
+
+
+@main.route('/vote-post', methods=['POST'])
+# @login_required
+def vote_post():
+    # 如果用户未登录，返回相关信息给AJAX，手动处理重定向。
+    # 如果交给@login_required自动重定向的话，
+    # AJAX不能正确处理这个重定向
+    if not current_user.is_authenticated:
+        return jsonify({
+            'status': 302,
+            'location': url_for(
+                'auth.login',
+                next=request.referrer.replace(
+                    url_for('.index', _external=True)[:-1], ''))
+        })
+    # 以post方式传的数据在存储在的request.form中，以get方式传输的在request.args中~~
+    answer = Answer.query.get_or_404(int(request.form.get('id')))
+    if current_user == answer.author:
+        return 'disable'
+    if current_user.vote_answer(answer):
+        return 'vote'
+    else:
+        return 'cancel'
