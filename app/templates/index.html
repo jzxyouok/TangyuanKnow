@@ -6,7 +6,7 @@
 
 {% block page_content %}
 <div class="page-header">
-    <h1>Hello,
+    <h1>你好,
         {% if current_user.is_authenticated %}
             {{ current_user.nickname }}
         {% else %}
@@ -14,30 +14,80 @@
         {% endif %}!
     </h1>
 </div>
-    <!--
-{% if users %}
-<table class="table table-bordered">
-<caption>排行榜</caption>
-<thead>
-    <tr>
-        <td>nickname</td>
-        <td>score</td>
-    </tr>
-</thead>
-<tbody>
-    {% for user in users %}
-    <tr>
-        <td><a href="{{ url_for('.user', nickname=user.nickname) }}">{{ user.nickname }}</a></td>
-        <td>{{ user.score }}</td>
-    </tr>
+{% if qas %}
+    {% for qa in qas %}
+        {% if qa['question'] and qa['answer'] and qa['answerer']%}
+    <div class="container">
+	<div class="row">
+		<div class="col-md-1">
+			 <button class="btn btn-default btn-sm vote-post" id="{{ qa['answer'].id }}">
+                 <span class="voted">
+                     {% if current_user.is_authenticated and current_user.is_voted(qa['answerer']) %}
+                         已赞
+                     {% elif current_user != qa['answerer'] %}
+                         觉得不错？
+                     {% else %}
+                         被赞
+                     {% endif %}
+                 </span>
+                <span class="badge votes">{{ qa['answer'].voters.count() }}</span>
+             </button>
+		</div>
+		<div class="col-md-8">
+			来自话题： <span class="label label-primary">文字标签</span>
+			<h3 class="text-left">
+				{{ qa['question'].title }}
+			</h3>
+			<p class="text-left">
+				{{ qa['answerer'].nickname }} <span class="badge">学生认证</span> ， {{ qa['answerer'].about_me }}
+			</p>
+			<p>
+                {{ qa['answer'].body_html | safe }}
+			</p>
+		</div>
+	</div>
+    </div>
+        {% endif %}
     {% endfor %}
-</tbody>
-</table>
 {% endif %}
 {% if pagination %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination, '.index') }}
 </div>
 {% endif %}
--->
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{{ pagedown.include_pagedown() }}
+    <script type="text/javascript">
+    $(function(){
+    $('.vote-post').click(function(){
+        var voteBtn = $(this);
+        var votesNum = voteBtn.find('.votes');
+        var data = {
+            'id': voteBtn.prop('id')
+        };
+        $.ajax({
+            type: 'POST',
+            url: '/vote-post',
+            data: data,  // 这个data是要post的数据
+            success: function(data){  // 这个data是接收到的响应的实体
+                if(data == 'vote'){
+                    votesNum.text(Number(votesNum.text()) + 1);
+                    $('.voted').text('已赞');
+                } else if(data == 'cancel'){
+                    votesNum.text(votesNum.text() - 1);
+                    $('.voted').text('觉得不错？');
+                } else if(data == 'disable'){
+                    alert('你不能给自己点赞');  // 这里可以用模态框，会好看点~~懒得弄了
+                } else if(data.status == 302){
+                    location.href = data.location;
+                }
+            }
+        });
+    });
+});
+    </script>
 {% endblock %}

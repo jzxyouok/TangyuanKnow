@@ -21,7 +21,7 @@ class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64),
                                              Regexp('[A-Za-z0-9_.]+@qq.com', 0, '抱歉，目前仅支持QQ邮箱')])
     nickname = StringField('昵称', validators=[DataRequired(), Length(1, 64),
-                                             Regexp('[^\x00-\xffa-zA-Z0-9]+',
+                                             Regexp(u'[a-zA-Z0-9\u4e00-\u9fa5]+',
                                                     0, '用户昵称仅限使用汉字、字母和数字')])
     password = PasswordField('密码', validators=[DataRequired(), EqualTo('password2', '两次密码不一致')])
     password2 = PasswordField('密码确认', validators=[DataRequired()])

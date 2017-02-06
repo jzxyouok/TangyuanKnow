@@ -11,6 +11,8 @@ from flask_login import UserMixin, AnonymousUserMixin
 from flask import current_app, request
 from datetime import datetime
 import hashlib
+from markdown import markdown
+import bleach
 
 
 class Permission:
@@ -79,19 +81,45 @@ class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(128), index=True)
     body = db.Column(db.Text)
+    body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     # ban = db.Column(db.)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    answers = db.relationship('Answer', backref='q_answer', lazy='dynamic')
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                        'h1', 'h2', 'h3', 'p']
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'),
+            tags=allowed_tags, strip=True))
+db.event.listen(Question.body, 'set', Question.on_changed_body)
 
 
 class Answer(db.Model):
     __tablename__ = 'answers'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, index=True,default=datetime.utcnow)
-    answerer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    body_html = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
-    voting = db.relationship('Vote', backref='voting', lazy='dynamic')
+    answerer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    belong = db.Column(db.Integer, db.ForeignKey('questions.id'))
+
+    voters = db.relationship('Vote', backref='voter', lazy='dynamic')
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                        'h1', 'h2', 'h3', 'p']
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'),
+            tags=allowed_tags, strip=True))
+db.event.listen(Answer.body, 'set', Answer.on_changed_body)
 
 
 class Vote(db.Model):
@@ -190,12 +218,19 @@ class User(db.Model, UserMixin):
     def vote_answer(self, answer):
         vote = self.voted_answers.filter_by(voted_answer_id=answer.id).first()
         if vote is None:
-            vote = Vote(voted_answer=self, voting=answer)
+            vote = Vote(voted_answer=self, voter=answer)
+            # Todo: 难以直观表现出谁点的赞，在那儿点的
             db.session.add(vote)
             return True
         else:
             db.session.delete(vote)
             return False
+
+    def is_voted(self, answer):
+        if self.voted_answers.filter_by(voted_answer_id=answer.id).first() is None:
+            return False
+        else:
+            return True
 
     @staticmethod
     def generate_fake(count=100):

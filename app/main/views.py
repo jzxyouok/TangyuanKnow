@@ -15,10 +15,13 @@ from .forms import EditProfileForm, EditProfileAdminForm
 
 @main.route('/', methods=['POST', 'GET'])
 def index():
-    # page = request.args.get('page', 1, type=int)
-    # pagination = User.query.order_by(User.score.desc()).paginate(page, per_page=50, error_out=False)
-    # users = pagination.items
-    return render_template('index.html', )
+    page = request.args.get('page', 1, type=int)
+    pagination = Answer.query.order_by(Answer.timestamp.desc()).paginate(page, per_page=50, error_out=False)
+    qas = [{'question': Question.query.filter_by(id=item.belong).first(),
+            'answer': item,
+            'answerer': User.query.filter_by(id=item.answerer_id).first()}
+           for item in pagination.items]
+    return render_template('index.html', page=page, qas=qas, pagination=pagination)
 
 
 @main.route('/user/<nickname>')
@@ -26,6 +29,7 @@ def user(nickname):
     user = User.query.filter_by(nickname=nickname).first()
     if user is None:
         abort(404)
+
     return render_template('user.html', user=user)
 
 
@@ -89,7 +93,7 @@ def vote_post():
         })
     # 以post方式传的数据在存储在的request.form中，以get方式传输的在request.args中~~
     answer = Answer.query.get_or_404(int(request.form.get('id')))
-    if current_user == answer.author:
+    if current_user.id == answer.answerer_id:
         return 'disable'
     if current_user.vote_answer(answer):
         return 'vote'
