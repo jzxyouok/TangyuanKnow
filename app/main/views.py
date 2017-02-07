@@ -10,7 +10,7 @@ from .. import db, csrf
 from ..models import User, Permission, Role, Answer, Question, Vote
 from ..decorators import permission_required, admin_required
 from flask_login import login_required, current_user
-from .forms import EditProfileForm, EditProfileAdminForm, QuestionForm
+from .forms import EditProfileForm, EditProfileAdminForm, QuestionForm, AnswerForm
 from flask_wtf.csrf import validate_csrf, ValidationError
 
 
@@ -33,13 +33,18 @@ def index():
     return render_template('index.html',form=form, page=page, qas=qas, pagination=pagination)
 
 
-@main.route('/question/<int:id>')
+@main.route('/question/<int:id>', methods=['POST', 'GET'])
 def question(id):
+    form = AnswerForm()
+    if form.validate_on_submit():
+        answer = Answer(body=form.body.data, belong=id, answerer_id=current_user.id)
+        db.session.add(answer)
+        redirect(url_for('main.question', id=id))
     the_question = Question.query.get_or_404(id)
     answers = the_question.answers.all()
     infos = [{'answer': answer,
              'answerer': User.query.filter_by(id=answer.answerer_id).first()} for answer in answers]
-    return render_template('question.html', question=the_question, infos=infos)
+    return render_template('question.html', question=the_question, infos=infos, form=form)
 
 
 @main.route('/user/<nickname>')

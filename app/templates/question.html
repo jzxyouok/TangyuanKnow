@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf%}
 
 {% block title %}{{ question.title }} - 唐院知乎{% endblock %}
 
@@ -7,6 +8,9 @@
 <div class="container">
     <h1>{{ question.title }}</h1>
     <div><p>{{ question.body_html | safe }}</p></div>
+</div>
+<div>
+    {{ wtf.quick_form(form) }}
 </div>
 </div>
     <div>
@@ -69,10 +73,10 @@
             success: function(data){  // 这个data是接收到的响应的实体
                 if(data == 'vote'){
                     votesNum.text(Number(votesNum.text()) + 1);
-                    $('.voted').text('已赞');
+                    $('button#'+voteBtn.prop('id')+' span.voted').text('已赞');
                 } else if(data == 'cancel'){
                     votesNum.text(votesNum.text() - 1);
-                    $('.voted').text('觉得不错？');
+                    $('button#'+voteBtn.prop('id')+' span.voted').text('觉得不错？');
                 } else if(data == 'disable'){
                     alert('你不能给自己点赞');  // 这里可以用模态框，会好看点~~懒得弄了
                 } else if(data.status == 302){
