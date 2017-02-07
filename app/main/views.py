@@ -6,15 +6,17 @@ sys.setdefaultencoding('utf8')
 from flask import redirect, session, url_for, render_template, flash, abort, request, current_app, jsonify
 
 from . import main, forms
-from .. import db
+from .. import db, csrf
 from ..models import User, Permission, Role, Answer, Question, Vote
 from ..decorators import permission_required, admin_required
 from flask_login import login_required, current_user
-from .forms import EditProfileForm, EditProfileAdminForm
+from .forms import EditProfileForm, EditProfileAdminForm, QuestionForm
+from flask_wtf.csrf import validate_csrf, ValidationError
 
 
 @main.route('/', methods=['POST', 'GET'])
 def index():
+
     page = request.args.get('page', 1, type=int)
     pagination = Answer.query.order_by(Answer.timestamp.desc()).paginate(page, per_page=50, error_out=False)
     qas = [{'question': Question.query.filter_by(id=item.belong).first(),
@@ -78,6 +80,7 @@ def edit_profile_admin(id):
 
 
 @main.route('/vote-post', methods=['POST'])
+@csrf.exempt
 # @login_required
 def vote_post():
     # 如果用户未登录，返回相关信息给AJAX，手动处理重定向。
@@ -92,6 +95,17 @@ def vote_post():
                     url_for('.index', _external=True)[:-1], ''))
         })
     # 以post方式传的数据在存储在的request.form中，以get方式传输的在request.args中~~
+    # 同理，csrf token认证也要手动解决重定向
+    try:
+        validate_csrf(request.headers.get('X-CSRFToken'))
+    except ValidationError:
+        return jsonify({
+            'status': 400,
+            'location': url_for(
+                'auth.login',
+                next=request.referrer.replace(
+                    url_for('.index', _external=True)[:-1], ''))
+        })
     answer = Answer.query.get_or_404(int(request.form.get('id')))
     if current_user.id == answer.answerer_id:
         return 'disable'

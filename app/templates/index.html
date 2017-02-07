@@ -5,15 +5,67 @@
 {% block title %}Index - 唐院知乎{% endblock %}
 
 {% block page_content %}
+    {% if current_user.is_authenticated %}
 <div class="page-header">
-    <h1>你好,
-        {% if current_user.is_authenticated %}
-            {{ current_user.nickname }}
-        {% else %}
-            Stranger
-        {% endif %}!
-    </h1>
+<div class="container">
+    <div class="col-md-1">
+        <a href="{{ url_for('main.user', nickname=current_user.nickname) }}">
+            <img src="{{ current_user.gravatar(size=40) }}">
+        </a>
+    </div>
+    <div class="col-md-3">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#questionModal">
+                提问
+        </button>
+        <!-- Modal -->
+        <div class="modal fade" id="questionModal" tabindex="-1" role="dialog" aria-labelledby="questionModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+              </div>
+              <div class="modal-body">
+                提问
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#answerModal">
+                回答
+        </button>
+        <!-- Modal -->
+        <div class="modal fade" id="answerModal" tabindex="-1" role="dialog" aria-labelledby="answerModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+              </div>
+              <div class="modal-body">
+                回答
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    </div>
 </div>
+</div>
+    {% endif %}
 {% if qas %}
     {% for qa in qas %}
         {% if qa['question'] and qa['answer'] and qa['answerer']%}
@@ -64,12 +116,18 @@
     <script type="text/javascript">
     $(function(){
     $('.vote-post').click(function(){
+        var csrf_token = "{{ csrf_token() }}";
         var voteBtn = $(this);
         var votesNum = voteBtn.find('.votes');
         var data = {
             'id': voteBtn.prop('id')
         };
         $.ajax({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                }
+            },
             type: 'POST',
             url: '/vote-post',
             data: data,  // 这个data是要post的数据
