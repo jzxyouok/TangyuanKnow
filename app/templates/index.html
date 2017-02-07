@@ -27,7 +27,7 @@
                 <h4 class="modal-title" id="myModalLabel">Modal title</h4>
               </div>
               <div class="modal-body">
-                提问
+                {{ wtf.quick_form(form) }}
 
               </div>
               <div class="modal-footer">
@@ -88,7 +88,7 @@
 		<div class="col-md-8">
 			来自话题： <span class="label label-primary">文字标签</span>
 			<h3 class="text-left">
-				{{ qa['question'].title }}
+                <a class="text-muted" href="{{ url_for('main.question', id=qa['question'].id) }}"> {{ qa['question'].title }}</a>
 			</h3>
 			<p class="text-left">
 				{{ qa['answerer'].nickname }} <span class="badge">学生认证</span> ， {{ qa['answerer'].about_me }}

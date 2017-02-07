@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}{{ question.title }} - 唐院知乎{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+<div class="container">
+    <h1>{{ question.title }}</h1>
+    <div><p>{{ question.body_html | safe }}</p></div>
+</div>
+</div>
+    <div>
+        <ul class="post">
+            {% for info in infos %}
+                <li class="post">
+                    <div class="container">
+                        <div class="row">
+                        <div class="col-md-1">
+                            <button class="btn btn-default btn-sm vote-post" id="{{ info['answer'].id }}">
+                                <span class="voted">
+                     {% if current_user.is_authenticated and current_user.is_voted(info['answerer']) %}
+                         已赞
+                     {% elif current_user != info['answerer'] %}
+                         觉得不错？
+                     {% else %}
+                         被赞
+                     {% endif %}
+                                </span>
+                                <span class="badge votes">{{ info['answer'].voters.count() }}</span>
+                            </button>
+                        </div>
+                        <div class="col-md-11">
+                            <p>{{ info['answerer'].nickname }}
+                                {% if info['answerer'].about_me  %},
+                                {{ info['answerer'].about_me }}
+                                {% endif %}
+                            </p>
+                            <p>{{ info['answer'].body_html | safe }}</p>
+                        </div>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

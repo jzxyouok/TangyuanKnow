@@ -16,14 +16,30 @@ from flask_wtf.csrf import validate_csrf, ValidationError
 
 @main.route('/', methods=['POST', 'GET'])
 def index():
-
+    form = QuestionForm()
+    if current_user.can(Permission.WRITE_ARTICLES) and \
+        form.validate_on_submit():
+        question = Question(author=current_user._get_current_object(),
+                            body=form.body.data,
+                            title=form.title.data)
+        db.session.add(question)
+        return redirect(url_for('.index'))
     page = request.args.get('page', 1, type=int)
     pagination = Answer.query.order_by(Answer.timestamp.desc()).paginate(page, per_page=50, error_out=False)
     qas = [{'question': Question.query.filter_by(id=item.belong).first(),
             'answer': item,
             'answerer': User.query.filter_by(id=item.answerer_id).first()}
            for item in pagination.items]
-    return render_template('index.html', page=page, qas=qas, pagination=pagination)
+    return render_template('index.html',form=form, page=page, qas=qas, pagination=pagination)
+
+
+@main.route('/question/<int:id>')
+def question(id):
+    the_question = Question.query.get_or_404(id)
+    answers = the_question.answers.all()
+    infos = [{'answer': answer,
+             'answerer': User.query.filter_by(id=answer.answerer_id).first()} for answer in answers]
+    return render_template('question.html', question=the_question, infos=infos)
 
 
 @main.route('/user/<nickname>')
