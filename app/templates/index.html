@@ -66,35 +66,35 @@
 </div>
 </div>
     {% endif %}
-{% if qas %}
-    {% for qa in qas %}
-        {% if qa['question'] and qa['answer'] and qa['answerer']%}
+{% if answers %}
+    {% for answer in answers %}
+        {% if answer.q_answer and answer and answer.answerer%}
     <div class="container">
 	<div class="row">
 		<div class="col-md-1">
-			 <button class="btn btn-default btn-sm vote-post" id="{{ qa['answer'].id }}">
+			 <button class="btn btn-default btn-sm vote-post" id="{{ answer.id }}">
                  <span class="voted">
-                     {% if current_user.is_authenticated and current_user.is_voted(qa['answerer']) %}
+                     {% if current_user.is_authenticated and current_user.is_voted(answer.answerer) %}
                          已赞
-                     {% elif current_user != qa['answerer'] %}
+                     {% elif current_user != answer.answerer %}
                          觉得不错？
                      {% else %}
                          被赞
                      {% endif %}
                  </span>
-                <span class="badge votes">{{ qa['answer'].voters.count() }}</span>
+                <span class="badge votes">{{ answer.voters.count() }}</span>
              </button>
 		</div>
 		<div class="col-md-8">
 			来自话题： <span class="label label-primary">文字标签</span>
 			<h3 class="text-left">
-                <a class="text-muted" href="{{ url_for('main.question', id=qa['question'].id) }}"> {{ qa['question'].title }}</a>
+                <a class="text-muted" href="{{ url_for('main.question', id=answer.q_answer.id) }}"> {{ answer.q_answer.title }}</a>
 			</h3>
 			<p class="text-left">
-				{{ qa['answerer'].nickname }} <span class="badge">学生认证</span> ， {{ qa['answerer'].about_me }}
+				{{ answer.answerer.nickname }} <span class="badge">学生认证</span> ， {{ answer.answerer.about_me }}
 			</p>
 			<p>
-                {{ qa['answer'].body_html | safe }}
+                {{ answer.body_html | safe }}
 			</p>
 		</div>
 	</div>

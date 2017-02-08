@@ -26,11 +26,8 @@ def index():
         return redirect(url_for('.index'))
     page = request.args.get('page', 1, type=int)
     pagination = Answer.query.order_by(Answer.timestamp.desc()).paginate(page, per_page=50, error_out=False)
-    qas = [{'question': Question.query.filter_by(id=item.belong).first(),
-            'answer': item,
-            'answerer': User.query.filter_by(id=item.answerer_id).first()}
-           for item in pagination.items]
-    return render_template('index.html',form=form, page=page, qas=qas, pagination=pagination)
+    answers = pagination.items
+    return render_template('index.html',form=form, page=page, answers=answers, pagination=pagination)
 
 
 @main.route('/question/<int:id>', methods=['POST', 'GET'])
