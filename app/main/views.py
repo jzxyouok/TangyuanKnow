@@ -39,9 +39,7 @@ def question(id):
         redirect(url_for('main.question', id=id))
     the_question = Question.query.get_or_404(id)
     answers = the_question.answers.all()
-    infos = [{'answer': answer,
-             'answerer': User.query.filter_by(id=answer.answerer_id).first()} for answer in answers]
-    return render_template('question.html', question=the_question, infos=infos, form=form)
+    return render_template('question.html', question=the_question, answers=answers, form=form)
 
 
 @main.route('/user/<nickname>')

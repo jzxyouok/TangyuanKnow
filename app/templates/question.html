@@ -15,31 +15,31 @@
 </div>
     <div>
         <ul class="post">
-            {% for info in infos %}
+            {% for answer in answers %}
                 <li class="post">
                     <div class="container">
                         <div class="row">
                         <div class="col-md-1">
-                            <button class="btn btn-default btn-sm vote-post" id="{{ info['answer'].id }}">
+                            <button class="btn btn-default btn-sm vote-post" id="{{ answer.id }}">
                                 <span class="voted">
-                     {% if current_user.is_authenticated and current_user.is_voted(info['answerer']) %}
+                     {% if current_user.is_authenticated and current_user.is_voted(answer.answerer) %}
                          已赞
-                     {% elif current_user != info['answerer'] %}
+                     {% elif current_user != answer.answerer %}
                          觉得不错？
                      {% else %}
                          被赞
                      {% endif %}
                                 </span>
-                                <span class="badge votes">{{ info['answer'].voters.count() }}</span>
+                                <span class="badge votes">{{ answer.voters.count() }}</span>
                             </button>
                         </div>
                         <div class="col-md-11">
-                            <p>{{ info['answerer'].nickname }}
-                                {% if info['answerer'].about_me  %},
-                                {{ info['answerer'].about_me }}
+                            <p>{{ answer.answerer.nickname }}
+                                {% if answer.answerer.about_me  %},
+                                {{ answer.answerer.about_me }}
                                 {% endif %}
                             </p>
-                            <p>{{ info['answer'].body_html | safe }}</p>
+                            <p>{{ answer.body_html | safe }}</p>
                         </div>
                         </div>
                     </div>
