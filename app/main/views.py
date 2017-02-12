@@ -51,6 +51,71 @@ def user(nickname):
     return render_template('user.html', user=user)
 
 
+@main.route('/follow/<nickname>')
+@login_required
+@permission_required(Permission.FOLLOW)
+def follow(nickname):
+    user = User.query.filter_by(nickname=nickname).first()
+    if user is None:
+        flash('不存在的用户！')
+        return redirect(url_for('.index'))
+    if current_user.is_following(user):
+        flash('你已关注此用户！')
+        redirect(url_for('.user', nickname=nickname))
+    current_user.follow(user)
+    flash('已关注 %s' % nickname)
+    return redirect(url_for('.user', nickname=nickname))
+
+
+@main.route('/unfollow/<nickname>')
+@login_required
+@permission_required(Permission.FOLLOW)
+def unfollow(nickname):
+    user = User.query.filter_by(nickname=nickname).first()
+    if user is None:
+        flash('该用户不存在')
+        return redirect(url_for('.index'))
+    if not current_user.is_following(user):
+        flash('你尚未关注此用户.')
+        return redirect(url_for('.user', nickname=nickname))
+    current_user.unfollow(user)
+    flash('你已不再关注 %s.' % nickname)
+    return redirect(url_for('.user', nickname=nickname))
+
+
+@main.route('/followers/<nickname>')
+@login_required
+def followers(nickname):
+    user = User.query.filter_by(nickname=nickname).first()
+    if user is None:
+        flash('不存在此用户')
+        return redirect(url_for('.index'))
+    page = request.args.get('page', 1, type=int)
+    pagination = user.followers.paginate(page, per_page=20, error_out=False)
+    follows = [{'user': item.follower, 'timestamp': item.timestamp}
+               for item in pagination.items]
+    return render_template('followers.html', user=user, title='关注了',
+                           endpoint='.followers', pagination=pagination,follows=follows)
+
+
+@main.route('/followed-by/<nickname>')
+@login_required
+def followed_by(nickname):
+    user = User.query.filter_by(nickname=nickname).first()
+    if user is None:
+        flash('不存在此用户')
+        return redirect(url_for('.index'))
+    page = request.args.get('page', 1, type=int)
+    pagination = user.followed.paginate(
+        page, per_page=20,
+        error_out=False)
+    follows = [{'user': item.followed, 'timestamp': item.timestamp}
+               for item in pagination.items]
+    return render_template('followers.html', user=user, title='被关注',
+                           endpoint='.followed_by', pagination=pagination,
+                           follows=follows)
+
+
 @main.route('/edit-profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
