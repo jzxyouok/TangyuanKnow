@@ -35,8 +35,18 @@ def question(id):
 
 
 @main.route('/question-modify/<int:id>', methods=['POST', 'GET'])
+@login_required
+@permission_required(Permission.WRITE_ARTICLES)
 def question_modify(id):
-    pass
+    the_question = Question.query.get_or_404(id)
+    form = QuestionForm()
+    if form.validate_on_submit():
+        the_question.title = form.title.data
+        the_question.body = form.body.data
+        return redirect(url_for('main.question', id=id))
+    form.title.data = the_question.title
+    form.body.data = the_question.body
+    return render_template('modify_question.html', form=form, question=the_question)
 
 
 @main.route('/answer/<int:id>', methods=['POST', 'GET'])

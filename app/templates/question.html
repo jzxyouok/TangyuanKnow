@@ -13,7 +13,7 @@
     <div class="col-sm-12">
         {% if current_user.can(Permission.WRITE_ARTICLES) %}
             <!-- 修改 -->
-            <a class="btn btn-default btn-info" href="#">
+            <a class="btn btn-default " href="{{ url_for('main.question_modify', id=question.id) }}">
                 修改问题
             </a>
         {% endif %}
