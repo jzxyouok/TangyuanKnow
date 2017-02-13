@@ -78,6 +78,32 @@ def user(nickname):
     return render_template('user.html', user=user)
 
 
+@main.route('/focus/<int:id>')
+@login_required
+@permission_required(Permission.FOLLOW)
+def focus(id):
+    q = Question.query.get_or_404(id)
+    if current_user.is_focus(q):
+        flash('已关注此问题！')
+        return redirect(url_for('.question', id=id))
+    current_user.focus(q)
+    flash('关注问题成功！')
+    return redirect(url_for('.question', id=id))
+
+
+@main.route('/unfocus/<int:id>')
+@login_required
+@permission_required(Permission.FOLLOW)
+def unfocus(id):
+    q = Question.query.get_or_404(id)
+    if current_user.is_focus(q):
+        current_user.unfocus(q)
+        flash('取消关注成功')
+        return redirect(url_for('.question', id=id))
+    flash('未关注此问题')
+    return redirect(url_for('.question', id=id))
+
+
 @main.route('/follow/<nickname>')
 @login_required
 @permission_required(Permission.FOLLOW)
@@ -88,7 +114,7 @@ def follow(nickname):
         return redirect(url_for('.index'))
     if current_user.is_following(user):
         flash('你已关注此用户！')
-        redirect(url_for('.user', nickname=nickname))
+        return redirect(url_for('.user', nickname=nickname))
     current_user.follow(user)
     flash('已关注 %s' % nickname)
     return redirect(url_for('.user', nickname=nickname))

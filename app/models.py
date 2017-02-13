@@ -87,6 +87,10 @@ class Question(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     answers = db.relationship('Answer', backref='q_answer', lazy='dynamic')
+    focus_by = db.relationship('Focus', backref='focus_on', lazy='dynamic')
+
+    def is_focus_by(self, user):
+        return self.focus_by.filter_by(user_id=user.id).first() is not None
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
@@ -136,6 +140,13 @@ class Follow(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 
+class Focus(db.Model):
+    __tablename__ = 'focuses'
+    question_id = db.Column(db.Integer, db.ForeignKey('questions.id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -158,6 +169,7 @@ class User(db.Model, UserMixin):
     questions = db.relationship('Question', backref='author', lazy='dynamic')
     answers = db.relationship('Answer', backref='answerer', lazy='dynamic')
     voted_answers = db.relationship('Vote', backref='voted_answer', lazy='dynamic')
+    focus_on = db.relationship('Focus', backref='focus_by', lazy='dynamic')
 
     followed = db.relationship('Follow',
                                foreign_keys=[Follow.follower_id],
@@ -236,7 +248,6 @@ class User(db.Model, UserMixin):
         vote = self.voted_answers.filter_by(voted_answer_id=answer.id).first()
         if vote is None:
             vote = Vote(voted_answer=self, voter=answer)
-            # Todo: 难以直观表现出谁点的赞，在那儿点的
             db.session.add(vote)
             return True
         else:
@@ -264,6 +275,20 @@ class User(db.Model, UserMixin):
 
     def is_followed_by(self, user):
         return self.followers.filter_by(follower_id=user.id).first() is not None
+
+    def focus(self, question):
+        if not self.is_focus(question):
+            f = Focus(focus_by=self, focus_on=question)
+            db.session.add(f)
+
+    def unfocus(self, question):
+        f = self.focus_on.filter_by(question_id=question.id).first()
+        if f:
+            db.session.delete(f)
+
+    def is_focus(self, question):
+        return self.focus_on.filter_by(question_id=question.id).first() is not None
+
 
     @property
     def followed_posts(self):
