@@ -9,9 +9,11 @@
     <h1>{{ question.title }}</h1>
     <div><p>{{ question.body_html | safe }}</p></div>
 </div>
+    {% if current_user.is_authenticated and current_user.can(Permission.WRITE_ARTICLES) %}
 <div>
     {{ wtf.quick_form(form) }}
 </div>
+    {% endif %}
 </div>
     <div>
         <ul class="post">
@@ -25,7 +27,7 @@
                      {% if current_user.is_authenticated and current_user.is_voted(answer.answerer) %}
                          已赞
                      {% elif current_user != answer.answerer %}
-                         觉得不错？
+                         赞
                      {% else %}
                          被赞
                      {% endif %}
