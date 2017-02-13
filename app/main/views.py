@@ -17,12 +17,9 @@ from flask_wtf.csrf import validate_csrf, ValidationError
 @main.route('/', methods=['POST', 'GET'])
 def index():
     form = QuestionForm()
-    if current_user.can(Permission.WRITE_ARTICLES) and \
-        form.validate_on_submit():
-        question = Question(author=current_user._get_current_object(),
-                            body=form.body.data,
-                            title=form.title.data)
-        db.session.add(question)
+    if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
+        q = Question(author=current_user._get_current_object(), body=form.body.data, title=form.title.data)
+        db.session.add(q)
         return redirect(url_for('.index'))
     page = request.args.get('page', 1, type=int)
     pagination = Answer.query.order_by(Answer.timestamp.desc()).paginate(page, per_page=50, error_out=False)
@@ -30,16 +27,36 @@ def index():
     return render_template('index.html',form=form, page=page, answers=answers, pagination=pagination)
 
 
-@main.route('/question/<int:id>', methods=['POST', 'GET'])
+@main.route('/question/<int:id>')
 def question(id):
-    form = AnswerForm()
-    if form.validate_on_submit():
-        answer = Answer(body=form.body.data, belong=id, answerer_id=current_user.id)
-        db.session.add(answer)
-        redirect(url_for('main.question', id=id))
     the_question = Question.query.get_or_404(id)
     answers = the_question.answers.all()
-    return render_template('question.html', question=the_question, answers=answers, form=form)
+    return render_template('question.html', question=the_question, answers=answers)
+
+
+@main.route('/question-modify/<int:id>', methods=['POST', 'GET'])
+def question_modify(id):
+    pass
+
+
+@main.route('/answer/<int:id>', methods=['POST', 'GET'])
+@login_required
+@permission_required(Permission.WRITE_ARTICLES)
+def answer(id):
+    the_question = Question.query.get_or_404(id)
+    old_answer = the_question.answers.filter_by(answerer=current_user).first()
+    form = AnswerForm()
+    if form.validate_on_submit():
+        if old_answer is not None:
+            old_answer.body = form.body.data
+            db.session.add(old_answer)
+        else:
+            answer = Answer(body=form.body.data, q_answer=the_question, answerer=current_user._get_current_object())
+            db.session.add(answer)
+        return redirect(url_for('main.question', id=id))
+    if old_answer is not None:
+        form.body.data = old_answer.body
+    return render_template('answer.html', question=the_question, form=form)
 
 
 @main.route('/user/<nickname>')

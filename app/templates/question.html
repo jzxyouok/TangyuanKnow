@@ -1,19 +1,31 @@
 {% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf%}
 
 {% block title %}{{ question.title }} - 唐院知乎{% endblock %}
 
 {% block page_content %}
 <div class="page-header">
 <div class="container">
-    <h1>{{ question.title }}</h1>
-    <div><p>{{ question.body_html | safe }}</p></div>
-</div>
-    {% if current_user.is_authenticated and current_user.can(Permission.WRITE_ARTICLES) %}
-<div>
-    {{ wtf.quick_form(form) }}
-</div>
+    <div class="col-sm-12">
+        <h1>{{ question.title }}</h1>
+        <h2>{{ question.body_html | safe }}</h2>
+    </div>
+    {% if current_user.is_authenticated %}
+    <div class="col-sm-12">
+        {% if current_user.can(Permission.WRITE_ARTICLES) %}
+            <!-- 修改 -->
+            <a class="btn btn-default btn-info" href="#">
+                修改问题
+            </a>
+        {% endif %}
+        {% if current_user.can(Permission.WRITE_ARTICLES) %}
+            <!-- 添加回答 -->
+            <a class="btn btn-default btn-doc" href="{{ url_for('main.answer', id=question.id) }}">
+                添加回答
+            </a>
+        {% endif %}
+    </div>
     {% endif %}
+</div>
 </div>
     <div>
         <ul class="post">

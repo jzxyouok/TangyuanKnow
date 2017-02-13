@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% import "bootstrap/wtf.html" as wtf%}
+
+{% block title %}编辑回答 - {{ question.title }} - 唐院知乎{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+<div class="container">
+    <div class="col-sm-12">
+        <h1>{{ question.title }}</h1>
+        <h2>{{ question.body_html | safe }}</h2>
+    </div>
+    {% if current_user.is_authenticated %}
+        <hr>
+    <div class="col-sm-12">
+        {% if current_user.can(Permission.WRITE_ARTICLES) %}
+            {{ wtf.quick_form(form) }}
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+</div>
+{% endblock %}
