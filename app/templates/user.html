@@ -4,8 +4,11 @@
 {% block title %}{{ user.nickname }} - 唐院知乎{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-    <img class="img-rounded profile-thumbnail" src="{{ user.gravatar(size=256) }}">
+<div class="page-header container">
+    <div class="col-lg-4">
+        <img class="img-rounded profile-thumbnail" src="{{ user.gravatar(size=256) }}">
+    </div>
+    <div class="col-lg-6">
     <div class="profile-header">
         <h1>{{ user.nickname }}</h1>
         {% if user.name or user.location %}
@@ -44,6 +47,7 @@
             <a class="btn btn-danger" href="{{ url_for('.edit_profile_admin', id=user.id) }}">Edit Profile [Admin]</a>
             {% endif %}
         </p>
+    </div>
     </div>
 </div>
 <h3>Posts by {{ user.nickname }}</h3>
