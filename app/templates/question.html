@@ -59,9 +59,12 @@
                             </button>
                         </div>
                         <div class="col-md-11">
-                            <p>{{ answer.answerer.nickname }}
-                                {% if answer.answerer.about_me  %},
-                                {{ answer.answerer.about_me }}
+                            <p>
+                                <a href="{{ url_for('main.user', nickname=answer.answerer.nickname) }}">
+                                    <strong>{{ answer.answerer.nickname }}</strong>
+                                </a>
+                                {% if answer.answerer.about_me  %}
+                                    ,<small>{{ answer.answerer.about_me }}</small>
                                 {% endif %}
                             </p>
                             <p>{{ answer.body_html | safe }}</p>
