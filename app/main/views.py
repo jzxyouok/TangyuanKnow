@@ -3,7 +3,8 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-from flask import redirect, session, url_for, render_template, flash, abort, request, current_app, jsonify
+from flask import redirect, session, url_for, render_template, \
+    flash, abort, request, current_app, jsonify, make_response
 
 from . import main, forms
 from .. import db, csrf
@@ -21,10 +22,34 @@ def index():
         q = Question(author=current_user._get_current_object(), body=form.body.data, title=form.title.data)
         db.session.add(q)
         return redirect(url_for('.index'))
+    show_followed_answers = False
+    if current_user.is_authenticated:
+        show_followed_answers = bool(request.cookies.get('show_followed_answers', ''))
+    if show_followed_answers:
+        query = current_user.followed_answers
+    else:
+        query = Answer.query
     page = request.args.get('page', 1, type=int)
-    pagination = Answer.query.order_by(Answer.timestamp.desc()).paginate(page, per_page=50, error_out=False)
+    pagination = query.order_by(Answer.timestamp.desc()).paginate(page, per_page=50, error_out=False)
     answers = pagination.items
-    return render_template('index.html',form=form, page=page, answers=answers, pagination=pagination)
+    return render_template('index.html',form=form, page=page, answers=answers,
+                           pagination=pagination, show_followed_answers=show_followed_answers)
+
+
+@main.route('/all_answers')
+@login_required
+def show_all_answers():
+    resp = make_response(redirect(url_for('.index')))
+    resp.set_cookie('show_followed_answers', '', max_age=30*24*60*60)
+    return resp
+
+
+@main.route('/followed_answers')
+@login_required
+def show_followed_answers():
+    resp = make_response(redirect(url_for('.index')))
+    resp.set_cookie('show_followed_answers', '1', max_age=30 * 24 * 60 * 60)
+    return resp
 
 
 @main.route('/question/<int:id>')

@@ -289,11 +289,19 @@ class User(db.Model, UserMixin):
     def is_focus(self, question):
         return self.focus_on.filter_by(question_id=question.id).first() is not None
 
+    @property
+    def followed_answers(self):
+        return Answer.query.join(Follow, Follow.followed_id == Answer.answerer_id)\
+            .filter(Follow.follower_id == self.id)
 
     @property
-    def followed_posts(self):
-        return Answer.query.join(Follow, Follow.followed_id == Answer.answerer_id)\
-            .filter_by(Follow.follower_id == self.id)
+    def followed_questions(self):
+        return Question.query.join(Follow, Follow.followed_id == Question.author_id)\
+            .filter(Follow.follower_id == self.id)
+
+    # @property
+    # def followed_voted_answers(self):
+    #    return Answer.query.join
 
     @staticmethod
     def generate_fake(count=100):
