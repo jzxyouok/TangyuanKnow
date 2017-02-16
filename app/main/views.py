@@ -74,10 +74,10 @@ def question_modify(id):
     return render_template('modify_question.html', form=form, question=the_question)
 
 
-@main.route('/answer/<int:id>', methods=['POST', 'GET'])
+@main.route('/answer_edit/<int:id>', methods=['POST', 'GET'])
 @login_required
 @permission_required(Permission.WRITE_ARTICLES)
-def answer(id):
+def answer_edit(id):
     the_question = Question.query.get_or_404(id)
     old_answer = the_question.answers.filter_by(answerer=current_user).first()
     form = AnswerForm()
@@ -91,7 +91,7 @@ def answer(id):
         return redirect(url_for('main.question', id=id))
     if old_answer is not None:
         form.body.data = old_answer.body
-    return render_template('answer.html', question=the_question, form=form)
+    return render_template('answer_edit.html', question=the_question, form=form)
 
 
 @main.route('/user/<nickname>')

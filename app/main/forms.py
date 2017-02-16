@@ -58,3 +58,8 @@ class QuestionForm(FlaskForm):
 class AnswerForm(FlaskForm):
     body = PageDownField('回答', validators=[DataRequired()])
     submit = SubmitField('提交')
+
+
+class CommentForm(FlaskForm):
+    body = PageDownField('', validators=[DataRequired()])
+    submit = SubmitField('提交')

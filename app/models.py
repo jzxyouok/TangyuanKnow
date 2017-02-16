@@ -114,6 +114,7 @@ class Answer(db.Model):
     belong = db.Column(db.Integer, db.ForeignKey('questions.id'))
 
     voters = db.relationship('Vote', backref='voter', lazy='dynamic')
+    comments = db.relationship('Comment', backref='answer', lazy='dynamic')
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
@@ -147,6 +148,27 @@ class Focus(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 
+class Comment(db.Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    body_html = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    disabled = db.Column(db.Boolean)
+    answerer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    answer_id = db.Column(db.Integer, db.ForeignKey('answers.id'))
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                        'br', 'h3', 'p']
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'),
+            tags=allowed_tags, strip=True))
+db.event.listen(Comment.body, 'set', Comment.on_changed_body)
+
+
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -170,6 +192,8 @@ class User(db.Model, UserMixin):
     answers = db.relationship('Answer', backref='answerer', lazy='dynamic')
     voted_answers = db.relationship('Vote', backref='voted_answer', lazy='dynamic')
     focus_on = db.relationship('Focus', backref='focus_by', lazy='dynamic')
+
+    comments = db.relationship('Comment', backref='author', lazy='dynamic')
 
     followed = db.relationship('Follow',
                                foreign_keys=[Follow.follower_id],
