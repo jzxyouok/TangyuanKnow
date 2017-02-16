@@ -11,7 +11,7 @@
                      {% if current_user.is_authenticated and current_user.is_voted(answer.answerer) %}
                          已赞
                      {% elif current_user != answer.answerer %}
-                         觉得不错？
+                         点赞
                      {% else %}
                          被赞
                      {% endif %}
@@ -30,6 +30,20 @@
 			<p>
                 {{ answer.body_html | safe }}
 			</p>
+            <div class="post-footer">
+                {% if current_user == answer.answerer %}
+                <a href="{{ url_for('.answer_edit', id=answer.id) }}">
+                    <span class="label label-primary">Edit</span>
+                </a>
+                {% elif current_user.is_administrator() %}
+                <a href="{{ url_for('.answer_edit', id=answer.id) }}">
+                    <span class="label label-danger">Edit [Admin]</span>
+                </a>
+                {% endif %}
+                <a href="{{ url_for('.answer', id=answer.id) }}#comments">
+                    <span class="label label-primary">{{ answer.comments.count() }} Comments</span>
+                </a>
+            </div>
 		</div>
 	</div>
     </div>

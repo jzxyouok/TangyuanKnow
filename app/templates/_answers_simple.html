@@ -1,0 +1,35 @@
+<ul class="posts">
+    {% for answer in answers %}
+        <li class="post">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-1">
+                        <button class="btn btn-default btn-sm vote-post" id="{{ answer.id }}">
+                            <span class="voted">
+                                {% if current_user.is_authenticated and current_user.is_voted(answer.answerer) %}
+                                    已赞
+                                {% elif current_user != answer.answerer %}
+                                    赞
+                                {% else %}
+                                    被赞
+                                {% endif %}
+                            </span>
+                            <span class="badge votes">{{ answer.voters.count() }}</span>
+                        </button>
+                    </div>
+                    <div class="col-md-11">
+                        <p>
+                            <a href="{{ url_for('main.user', nickname=answer.answerer.nickname) }}">
+                                <strong>{{ answer.answerer.nickname }}</strong>
+                            </a>
+                            {% if answer.answerer.about_me  %}
+                                ,<small>{{ answer.answerer.about_me }}</small>
+                            {% endif %}
+                        </p>
+                        <p>{{ answer.body_html | safe }}</p>
+                    </div>
+                </div>
+            </div>
+        </li>
+    {% endfor %}
+</ul>

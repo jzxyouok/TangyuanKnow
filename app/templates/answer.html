@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% import "bootstrap/wtf.html" as wtf%}
+{% import "_macros.html" as macros %}
+
+{% block title %}{{ answers[0].answerer.nickname }}的回答 - {{ answers[0].q_answer.title }} - 唐院知乎{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+<div class="container">
+    <div class="col-sm-12">
+        <h1>{{ answers[0].q_answer.title }}</h1>
+        <h2>{{ answers[0].q_answer.body_html | safe }}</h2>
+    </div>
+
+    {% include '_answers_simple.html' %}
+
+    <h4 id="comments">Comments</h4>
+
+    {% if current_user.is_authenticated %}
+        <div class="comment-form">
+            {% if current_user.can(Permission.WRITE_ARTICLES) %}
+                {{ wtf.quick_form(form) }}
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% include '_comments.html' %}
+
+    {% if pagination %}
+    <div class="pagination">
+        {{ macros.pagination_widget(pagination, '.answer', fragment='#comments', id=answers[0].id) }}
+    </div>
+    {% endif %}
+</div>
+</div>
+{% endblock %}

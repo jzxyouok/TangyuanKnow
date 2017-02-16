@@ -8,10 +8,10 @@ from flask import redirect, session, url_for, render_template, \
 
 from . import main, forms
 from .. import db, csrf
-from ..models import User, Permission, Role, Answer, Question, Vote
+from ..models import User, Permission, Role, Answer, Question, Vote, Comment
 from ..decorators import permission_required, admin_required
 from flask_login import login_required, current_user
-from .forms import EditProfileForm, EditProfileAdminForm, QuestionForm, AnswerForm
+from .forms import EditProfileForm, EditProfileAdminForm, QuestionForm, AnswerForm, CommentForm
 from flask_wtf.csrf import validate_csrf, ValidationError
 
 
@@ -72,6 +72,28 @@ def question_modify(id):
     form.title.data = the_question.title
     form.body.data = the_question.body
     return render_template('modify_question.html', form=form, question=the_question)
+
+
+@main.route('/answer/<int:id>', methods=['POST', 'GET'])
+@login_required
+def answer(id):
+    answer = Answer.query.get_or_404(id)
+    form = CommentForm()
+    if form.validate_on_submit():
+        comment = Comment(body=form.body.data,
+                          answer=answer,
+                          author=current_user._get_current_object())
+        db.session.add(comment)
+        flash('评论已提交')
+        return redirect(url_for('.answer', id=id))
+    page = request.args.get('page', 1, type=int)
+    if page == -1:
+        page = (Answer.comments.count() - 1) / 20
+    pagination = answer.comments.order_by(Comment.timestamp.asc()).paginate(
+        page, per_page=20, error_out=False)
+    comments = pagination.items
+    return render_template('answer.html', answers=[answer], form=form,
+                           comments=comments, pagination=pagination)
 
 
 @main.route('/answer_edit/<int:id>', methods=['POST', 'GET'])
