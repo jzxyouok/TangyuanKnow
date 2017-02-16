@@ -230,7 +230,6 @@ class User(db.Model, UserMixin):
                 self.role = Role.query.filter_by(default=True).first()
         if self.email is not None and self.avatat_hash is None:
             self.avatat_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
-        self.follow(self)
 
     def can(self, permissions):
         return self.role is not None and \
@@ -253,6 +252,7 @@ class User(db.Model, UserMixin):
             return False
         self.confirmed = True
         db.session.add(self)
+        self.follow(self)
         return True
 
     def ping(self):
