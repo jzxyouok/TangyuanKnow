@@ -7,13 +7,10 @@
 {% block page_content %}
     {% if current_user.is_authenticated %}
 <div class="page-header">
-<div class="container">
-    <div class="col-md-1">
-        <a href="{{ url_for('main.user', nickname=current_user.nickname) }}">
-            <img src="{{ current_user.gravatar(size=40) }}">
-        </a>
-    </div>
-    <div class="col-sm-12">
+    <a class="img-rounded profile-thumbnail" href="{{ url_for('main.user', nickname=current_user.nickname) }}">
+        <img src="{{ current_user.gravatar(size=60) }}">
+    </a>
+    <div class="index-header">
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-default btn-doc" data-toggle="modal" data-target="#questionModal">
                 提问

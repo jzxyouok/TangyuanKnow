@@ -5,6 +5,10 @@
     min-height: 260px;
     margin-left: 280px;
 }
+.index-header {
+    margin-left: 80px;
+    min-height: 80px;
+}
 div.post-tabs {
     margin-top: 16px;
 }
