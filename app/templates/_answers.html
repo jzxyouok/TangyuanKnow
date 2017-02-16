@@ -25,7 +25,10 @@
                 <a class="text-muted" href="{{ url_for('main.question', id=answer.q_answer.id) }}"> {{ answer.q_answer.title }}</a>
 			</h3>
 			<p class="text-left">
-				{{ answer.answerer.nickname }} <span class="badge">学生认证</span> ， {{ answer.answerer.about_me }}
+				{{ answer.answerer.nickname }} <span class="badge">学生认证</span>
+                {% if answer.answerer.about_me  %}
+                    ， {{ answer.answerer.about_me }}
+                {% endif %}
 			</p>
 			<p>
                 {{ answer.body_html | safe }}

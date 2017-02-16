@@ -59,4 +59,40 @@
 {{ super() }}
 {{ moment.include_moment() }}
 {{ moment.lang('zh-cn') }}
+{{ pagedown.include_pagedown() }}
+    <script type="text/javascript">
+    $(function(){
+    $('.vote-post').click(function(){
+        var csrf_token = "{{ csrf_token() }}";
+        var voteBtn = $(this);
+        var votesNum = voteBtn.find('.votes');
+        var data = {
+            'id': voteBtn.prop('id')
+        };
+        $.ajax({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                }
+            },
+            type: 'POST',
+            url: '/vote-post',
+            data: data,  // 这个data是要post的数据
+            success: function(data){  // 这个data是接收到的响应的实体
+                if(data == 'vote'){
+                    votesNum.text(Number(votesNum.text()) + 1);
+                    $('button#'+voteBtn.prop('id')+' span.voted').text('已赞');
+                } else if(data == 'cancel'){
+                    votesNum.text(votesNum.text() - 1);
+                    $('button#'+voteBtn.prop('id')+' span.voted').text('赞');
+                } else if(data == 'disable'){
+                    alert('你不能给自己点赞');  // 这里可以用模态框，会好看点~~懒得弄了
+                } else if(data.status == 302){
+                    location.href = data.location;
+                }
+            }
+        });
+    });
+});
+    </script>
 {% endblock %}

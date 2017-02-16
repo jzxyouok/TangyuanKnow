@@ -71,7 +71,7 @@ def question_modify(id):
         return redirect(url_for('main.question', id=id))
     form.title.data = the_question.title
     form.body.data = the_question.body
-    return render_template('modify_question.html', form=form, question=the_question)
+    return render_template('edit_question.html', form=form, question=the_question)
 
 
 @main.route('/answer/<int:id>', methods=['POST', 'GET'])
@@ -113,7 +113,7 @@ def answer_edit(id):
         return redirect(url_for('main.question', id=id))
     if old_answer is not None:
         form.body.data = old_answer.body
-    return render_template('answer_edit.html', question=the_question, form=form)
+    return render_template('edit_answer.html', question=the_question, form=form)
 
 
 @main.route('/user/<nickname>')

@@ -1,7 +1,10 @@
 # TangyuanKnow
-基于Python Flask的、面向唐山学院校内的一个问答社区网站
+基于Python Flask的、面向唐山学院校内的一个~~抄袭~~模仿知乎的问答网站
 
-后端 Flask + SQLAlchemy ;前端 Bootstrap
+后端 Python Flask
+
+前端 Bootstrap
+
 
 # 目前处于开发阶段
 # 设计
