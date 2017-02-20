@@ -1,8 +1,40 @@
 {% extends "base.html" %}
+{% import "_macros.html" as macros %}
 
-{% block title %}{{ question.title }} - 唐院知乎{% endblock %}
+{% block title %}回答 - 唐院知乎{% endblock %}
 
 {% block page_content %}
 <div class="page-header">
     <h1>Questions</h1>
 </div>
+<div class="container">
+    <ul class="posts">
+    {% for question in questions %}
+    <li class="post">
+        <div class="post-content">
+            <div class="post-body">
+                <a href="{{ url_for('main.question', id=question.id) }}">
+                    {{ question.body_html | safe }}
+                </a>
+            </div>
+            <div class="post-footer">
+                <a href="{{ url_for('main.question', id=question.id) }}">
+                    {{ question.answers.count() }}个回答
+                </a>
+                <b>
+                    {{ question.focus_by.count() }}人关注
+                </b>
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+    </ul>
+</div>
+
+
+{% if pagination %}
+    <div class="pagination">
+        {{ macros.pagination_widget(pagination, '.index') }}
+    </div>
+{% endif %}
+{% endblock %}
