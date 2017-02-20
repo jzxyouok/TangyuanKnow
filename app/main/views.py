@@ -32,7 +32,7 @@ def index():
     page = request.args.get('page', 1, type=int)
     pagination = query.order_by(Answer.timestamp.desc()).paginate(page, per_page=50, error_out=False)
     answers = pagination.items
-    return render_template('index.html',form=form, page=page, answers=answers,
+    return render_template('index.html', form=form, page=page, answers=answers,
                            pagination=pagination, show_followed_answers=show_followed_answers)
 
 
@@ -50,6 +50,16 @@ def show_followed_answers():
     resp = make_response(redirect(url_for('.index')))
     resp.set_cookie('show_followed_answers', '1', max_age=30 * 24 * 60 * 60)
     return resp
+
+
+@main.route('/questions')
+def questions():
+    page = request.args.get('page', 1, type=int)
+    pagination = Question.query.order_by(Question.timestamp.desc())\
+        .paginate(page, per_page=20, error_out=False)
+    qs = pagination.items
+    return render_template('questions.html', page=page, questions=qs,
+                           pagination=pagination)
 
 
 @main.route('/question/<int:id>')
