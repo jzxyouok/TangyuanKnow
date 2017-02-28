@@ -1,4 +1,8 @@
-export MAIL_USERNAME="your email addr"
-export MAIL_PASSWORD="your email passwd"
-export TYKNOW_ADMIN="administrator's email"
-export SECRET_KEY="secret string"
+export MAIL_USERNAME=your email addr
+export MAIL_PASSWORD=your email passwd
+export TYKNOW_ADMIN=administrator's email
+export SECRET_KEY=secret string
+export QINIU_ACCESS_KEY=access key
+export QINIU_SECRET_KEY=secret ket
+export QINIU_BUCKET_NAME=bucket name
+export QINIU_BUCKET_DOMAIN=bucket domain
