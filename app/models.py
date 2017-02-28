@@ -66,6 +66,32 @@ class Role(db.Model):
         db.session.commit()
 
 
+class VRole(db.Model):
+    # 认证
+    __tablename__ = 'vroles'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    default = db.Column(db.Boolean, default=False)
+
+    users = db.relationship('User', backref='vrole', lazy='dynamic')
+
+    def __repr__(self):
+        return '<Role %r>' % self.name
+
+    @staticmethod
+    def insert_vroles():
+        vroles = {
+            'student': False,
+            'teacher': False
+        }
+        for r in vroles:
+            vrole = VRole.query.filter_by(name=r).first()
+            if vrole is None:
+                vrole = VRole(name=r)
+            db.session.add(vrole)
+        db.session.commit()
+
+
 class Banning(db.Model):
     # 封禁理由
     __tablename__ = 'bannings'
@@ -186,7 +212,17 @@ class User(db.Model, UserMixin):
 
     avatat_hash = db.Column(db.String(32))
 
+    # 储存图片的文件名, 用文件名获取URL
+    photo_stu = db.Column(db.String(64))
+    photo_idcard = db.Column(db.String(64))
+    photo_head = db.Column(db.String(64))
+
+    # 提交认证
+    # vrole_verified = db.Column(db.Boolean)
+    photos_uploaded = db.Column(db.Boolean)
+
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    vrole_id = db.Column(db.Integer, db.ForeignKey('vroles.id'))
 
     questions = db.relationship('Question', backref='author', lazy='dynamic')
     answers = db.relationship('Answer', backref='answerer', lazy='dynamic')
@@ -313,6 +349,15 @@ class User(db.Model, UserMixin):
 
     def is_focus(self, question):
         return self.focus_on.filter_by(question_id=question.id).first() is not None
+
+    def is_student(self):
+        return self.vrole.name == 'student'
+
+    def is_teacher(self):
+        return self.vrole.name == 'teacher'
+
+    def is_verified(self):
+        return self.vrole is not None
 
     @property
     def followed_answers(self):

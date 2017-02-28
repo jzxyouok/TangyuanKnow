@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}身份认证 - 唐院知乎{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>身份认证！</h1>
+</div>
+
+<div class="container">
+<div>
+    {% if not current_user.photos_uploaded %}
+    <div></div>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <b>学生证/教师证</b>
+        {{ form.stu_photo }}
+        {% for error in form.stu_photo.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+        <b>身份证</b>
+        {{ form.id_photo }}
+        {% for error in form.id_photo.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+        {{ form.submit }}
+    </form>
+    {% elif current_user.is_verified() %}
+        <b>您已通过认证</b>
+    {% else %}
+        <b>您的申请正在审核中</b>
+        {% if stu_url %}
+            <img src="{{ stu_url }}" height="300">
+        {% endif %}
+        {% if id_url %}
+            <img src="{{ id_url }}" height="300">
+        {% endif %}
+    {% endif %}
+
+</div>
+</div>
+{% endblock %}

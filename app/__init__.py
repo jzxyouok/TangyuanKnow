@@ -7,6 +7,9 @@ from flask_mail import Mail
 from flask_moment import Moment
 from flask_pagedown import PageDown
 from flask_wtf.csrf import CSRFProtect
+from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
+from flask_qiniustorage import Qiniu
+
 
 db = SQLAlchemy()
 bootstrap = Bootstrap()
@@ -17,6 +20,8 @@ csrf = CSRFProtect()
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
+photos = UploadSet('photos', IMAGES)
+qiniu_store = Qiniu()
 
 
 def create_app(config_name):
@@ -31,6 +36,11 @@ def create_app(config_name):
     mail.init_app(app)
     pagedown.init_app(app)
     csrf.init_app(app)
+    qiniu_store.init_app(app)
+
+    # upload stuff
+    configure_uploads(app, photos)
+    patch_request_class(app, size=app.config.get('MAX_CONTENT_LENGTH'))
 
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
@@ -40,5 +50,8 @@ def create_app(config_name):
 
     # from .meetbot import meetbot as meetbot_blueprint
     # app.register_blueprint(meetbot_blueprint, url_prefix='/meetbot')
+
+    from .role_auth import role_auth as role_auth_blueprint
+    app.register_blueprint(role_auth_blueprint, url_prefix='/role-auth')
 
     return app

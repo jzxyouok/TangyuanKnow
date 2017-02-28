@@ -1,0 +1,4 @@
+export MAIL_USERNAME="your email addr"
+export MAIL_PASSWORD="your email passwd"
+export TYKNOW_ADMIN="administrator's email"
+export SECRET_KEY="secret string"
