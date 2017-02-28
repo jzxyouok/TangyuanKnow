@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf%}
 
 {% block title %}身份认证 - 唐院知乎{% endblock %}
 
@@ -11,24 +12,19 @@
 <div>
     {% if not current_user.photos_uploaded %}
     <div></div>
-    <form method="POST" enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
-        <b>学生证/教师证</b>
-        {{ form.stu_photo }}
-        {% for error in form.stu_photo.errors %}
-            <span style="color: red;">{{ error }}</span>
-        {% endfor %}
-        <b>身份证</b>
-        {{ form.id_photo }}
-        {% for error in form.id_photo.errors %}
-            <span style="color: red;">{{ error }}</span>
-        {% endfor %}
-        {{ form.submit }}
-    </form>
+        {{ wtf.quick_form(form) }}
     {% elif current_user.is_verified() %}
         <b>您已通过认证</b>
+        <b>真实姓名: {{ current_user.real_name }}</b>
+        <b>身份: {{ current_user.vrole.name }}</b>
     {% else %}
         <b>您的申请正在审核中</b>
+        {% if current_user.real_name %}
+            <b>真实姓名: {{ current_user.real_name }}</b>
+        {% endif %}
+        {% if current_user.stu_number %}
+            <b>学号: {{ current_user.stu_number }}</b>
+        {% endif %}
         {% if stu_url %}
             <img src="{{ stu_url }}" height="300">
         {% endif %}

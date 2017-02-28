@@ -212,6 +212,10 @@ class User(db.Model, UserMixin):
 
     avatat_hash = db.Column(db.String(32))
 
+    # 身份认证
+    real_name = db.Column(db.String(32))
+    stu_number = db.Column(db.String(11), unique=True, index=True)
+
     # 储存图片的文件名, 用文件名获取URL
     photo_stu = db.Column(db.String(64))
     photo_idcard = db.Column(db.String(64))

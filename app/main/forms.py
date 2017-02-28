@@ -24,7 +24,7 @@ class EditProfileAdminForm(FlaskForm):
                                              Regexp('[A-Za-z0-9_.]+@qq.com', 0, '抱歉，目前仅支持QQ邮箱')])
     nickname = StringField('昵称', validators=[DataRequired(), Length(1, 64),
                                              Regexp(u'[a-zA-Z0-9\u4e00-\u9fa5]+',
-                                                    0, '用户昵称仅限使用汉字、字母和数字')])
+                                                     0, '用户昵称仅限使用汉字、字母和数字')])
     confirmed = BooleanField('邮件认证')
     role = SelectField('角色', coerce=int)
     name = StringField('姓名', validators=[Length(0, 64)])

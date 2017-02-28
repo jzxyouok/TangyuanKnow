@@ -33,8 +33,8 @@ def upload_file():
 def upload():
     form = StudentAuthForm()
     id_url, stu_url = None, None
-    if current_user.photo_idcard is not None \
-        and current_user.photo_stu is not None:
+    if not current_user.is_verified() and current_user.photos_uploaded:
+        # 仅当未认证且已经提交了证明图片时才显示这些图片
         id_url = qiniu_store.url(current_user.photo_idcard)
         stu_url = qiniu_store.url(current_user.photo_stu)
     if form.validate_on_submit():
@@ -43,7 +43,8 @@ def upload():
         if id_ret is not None and stu_ret is not None:
             # id_url = qiniu_store.url(id_ret['key'])
             # stu_url = qiniu_store.url(stu_ret['key'])
-
+            current_user.real_name = form.real_name.data
+            current_user.stu_number = form.stu_number.data
             current_user.photo_stu = stu_ret['key']
             current_user.photo_idcard = id_ret['key']
             current_user.photos_uploaded = True
