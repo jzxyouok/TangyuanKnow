@@ -3,7 +3,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-from . import db
+from . import db, qiniu_store
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from . import login_manager
@@ -355,13 +355,21 @@ class User(db.Model, UserMixin):
         return self.focus_on.filter_by(question_id=question.id).first() is not None
 
     def is_student(self):
+        if self.vrole is None:
+            return False
         return self.vrole.name == 'student'
 
     def is_teacher(self):
+        if self.vrole is None:
+            return False
         return self.vrole.name == 'teacher'
 
     def is_verified(self):
         return self.vrole is not None
+
+    @staticmethod
+    def get_photo_url(filename):
+        return qiniu_store.url(filename)
 
     @property
     def followed_answers(self):

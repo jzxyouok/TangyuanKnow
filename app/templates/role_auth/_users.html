@@ -1,0 +1,50 @@
+<ul class="posts">
+    {% for user in users %}
+        <li class="post">
+            <div class="container">
+	<div class="row">
+		<div class="col-md-4">
+			<p>
+                用户名: {{ user.nickname }}
+			</p>
+		</div>
+		<div class="col-md-4">
+			<p>
+                真实姓名: {{ user.real_name }}
+			</p>
+		</div>
+		<div class="col-md-4">
+			<p>
+                学号/教师证号:{{ user.stu_number }}
+			</p>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-5">
+			<img width="400px" src="{{ user.get_photo_url(user.photo_stu ) }}" />
+		</div>
+		<div class="col-md-5">
+			<img width="400px" src="{{ user.get_photo_url(user.photo_idcard) }}" />
+		</div>
+		<div class="col-md-2">
+			 <button class="btn" type="button">
+                 <a href="{{ url_for('role_auth.yes_stu', id=user.id) }}">
+                     学生
+                 </a>
+             </button>
+            <button class="btn" type="button">
+                 <a href="{{ url_for('role_auth.yes_tea', id=user.id) }}">
+                     教师
+                 </a>
+             </button>
+            <button class="btn" type="button">
+                 <a href="{{ url_for('role_auth.no', id=user.id) }}">
+                     驳回
+                 </a>
+             </button>
+		</div>
+	</div>
+</div>
+        </li>
+    {% endfor %}
+</ul>

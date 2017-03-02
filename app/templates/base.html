@@ -60,7 +60,7 @@
 {{ moment.include_moment() }}
 {{ moment.lang('zh-cn') }}
 {{ pagedown.include_pagedown() }}
-    <script type="text/javascript">
+<script type="text/javascript">
     $(function(){
     $('.vote-post').click(function(){
         var csrf_token = "{{ csrf_token() }}";
@@ -93,6 +93,6 @@
             }
         });
     });
-});
-    </script>
+    });
+</script>
 {% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}实名认证审核 - 唐院知乎{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>身份认证审核页面</h1>
+</div>
+{% include "role_auth/_users.html" %}
+{% if pagination %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, 'role_auth.admin') }}
+</div>
+{% endif %}
+{% endblock %}
