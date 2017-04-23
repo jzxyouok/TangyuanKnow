@@ -1,0 +1,136 @@
+
+html, body, ul, li, ol, dl, dd, dt, p, h1, h2, h3, h4, h5, h6, form, fieldset, legend, img {
+    margin:0; padding:0;
+}
+fieldset, img,input,button { border:none; padding:0;margin:0;outline-style:none; }
+ul, ol { list-style:none; }
+input { padding-top:0; padding-bottom:0; font-family: "SimSun","宋体";}
+select, input { vertical-align:middle;}
+select, input, textarea { font-size:12px; margin:0; }
+textarea { resize:none; } /*防止拖动*/
+img {border:0;	vertical-align:middle; }  /*  去掉图片低测默认的3像素空白缝隙*/
+table { border-collapse:collapse; }
+.clearfix:before,.clearfix:after {
+    content:"";
+    display:table;
+}
+.clearfix:after{clear:both;}
+.clearfix{
+    *zoom:1;/*IE/7/6*/
+}
+a {color:#666; text-decoration:none; }
+a:hover{color:#C81623;}
+h1,h2,h3,h4,h5,h6 {text-decoration:none;font-weight:normal;font-size:100%;}
+del,i,em{font-style:normal;text-decoration:none;}
+
+body{
+    background-color: #F9F9F9;
+}
+.zhuce{
+    width: 1000px;
+    height: 500px;
+    margin: 50px auto;
+    background-color: #fff;
+    border:1px solid #CCCCCC;
+    border-radius: 4px;
+}
+.zhuce1{
+    width: 470px;
+    height: 400px;
+    margin:42px auto;
+
+
+}
+.zhuce1 h4{
+    display: inline-block;
+    font-size: 24px;
+    font-family:"宋体";
+}
+.zhuce1 .deng{
+    float: right;
+    margin-top: 5px;
+    text-decoration: none;
+    color: #5DA1EC;
+}
+.zhuce1 .deng:hover{
+    color: #0A7EC3;
+}
+.inpu{
+    margin-top: 20px;
+    position: relative;
+}
+.inpu input{
+    width: 440px;
+    height:50px;
+    padding-left: 30px;
+    border-bottom: 2px solid #D9D9D9;
+    color: #555555;
+    position: relative;
+    font-size: 16px;
+}
+input::-webkit-input-placeholder { /* WebKit browsers */
+    font-size: 16px;
+    color:#999999;
+
+
+}
+
+input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+
+    color: #999999;
+
+}
+
+input::-moz-placeholder { /* Mozilla Firefox 19+ */
+
+    color: #999999;
+
+}
+
+input:-ms-input-placeholder { /* Internet Explorer 10+ */
+
+    color: #999999;
+
+}
+.inpu .icon{
+    position: absolute;
+    width: 17px;
+    height: 19px;
+    background: url("yonghuming.png");
+    left: 8px;
+    top:15px;
+}
+.inpu .icon-clock{
+    position: absolute;
+    width: 17px;
+    height: 21px;
+    background: url("mima.png");
+    left: 8px;
+    top:67px;
+}
+.inpu .icon-clock1{
+    position: absolute;
+    width: 17px;
+    height: 21px;
+    background: url("mima.png");
+    left: 8px;
+    top:117px;
+}
+.ti{
+    width: 400px;
+    height:50px;
+    margin:20px auto;
+    text-align: center;
+    line-height: 50px;
+    border-radius: 4px;
+    background-color: #00B0E7;
+}
+.ti a{
+    width: 400px;
+    height:50px;
+    display:inline-block;
+    color: #fff;
+}
+.ti a:hover{
+    background-color: #0B0354;
+}

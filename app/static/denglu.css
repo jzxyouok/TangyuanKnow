@@ -1,0 +1,153 @@
+
+
+html, body, ul, li, ol, dl, dd, dt, p, h1, h2, h3, h4, h5, h6, form, fieldset, legend, img {
+    margin:0; padding:0;
+}
+fieldset, img,input,button { border:none; padding:0;margin:0;outline-style:none; }
+ul, ol { list-style:none; }
+input { padding-top:0; padding-bottom:0; font-family: "SimSun","宋体";}
+select, input { vertical-align:middle;}
+select, input, textarea { font-size:12px; margin:0; }
+textarea { resize:none; } /*防止拖动*/
+img {border:0;	vertical-align:middle; }  /*  去掉图片低测默认的3像素空白缝隙*/
+table { border-collapse:collapse; }
+body {
+    font:12px/150% Arial,Verdana,"\5b8b\4f53";
+    color:#666;
+    background:#fff;
+
+}
+.clearfix:before,.clearfix:after {
+    content:"";
+    display:table;
+}
+.clearfix:after{clear:both;}
+.clearfix{
+    *zoom:1;/*IE/7/6*/
+}
+a {color:#666; text-decoration:none; }
+a:hover{color:#C81623;}
+h1,h2,h3,h4,h5,h6 {text-decoration:none;font-weight:normal;font-size:100%;}
+del,i,em{font-style:normal;text-decoration:none;}
+
+body{
+    background:url("beijing.jpg") no-repeat;
+    background-size: 100% 150%;
+}
+.box{
+    width:320px;
+    height:380px;
+    background-color: #fff;
+    margin-left: 880px;
+    margin-top: 100px ;
+    border-radius: 5px;
+}
+.denglu h4{
+    display: inline-block;
+    font-size: 20px;
+    font-family: "Microsoft YaHei";
+    margin-top: 32px;
+    margin-left:20px;
+}
+.denglu .zhuce{
+    float: right;
+    margin-right: 20px;
+    text-decoration: none;
+    color: #5DA1EC;
+    margin-top: 32px;
+    font-size: 14px;
+}
+.denglu .zhuce:hover{
+    color: #0A7EC3;
+}
+.denglu .deng{
+    width:280px;
+    margin: 10px auto;
+    margin-top: 30px;
+}
+.deng input{
+    width: 250px;
+    height:30px;
+    padding-left:30px;
+    border-bottom: 2px solid #D9D9D9;
+    color: #D9D9D9;
+}
+.denglu .yong {
+    background: url(yonghuming.png) no-repeat 3px;
+}
+.denglu .mm{
+    margin-top:20px;
+    background: url(mima.png) no-repeat 3px ;
+}
+.tijiao{
+    width: 280px;
+    height:32px;
+    margin-top: 30px;
+    background-color: #00A1E9;
+    text-align: center;
+    border-radius: 5px;
+}
+.tijiao a{
+    display: inline-block;
+    width:280px;
+    height: 32px;
+    font-size: 14px;
+    line-height: 32px;
+    color: #fff;
+
+
+}
+.tijiao a:hover{
+    background-color: #0A7EC3;
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#box .yanzhengma label{
+    color: #666666;
+    font-size: 18px;
+}
+#box .yanzhengma input{
+    width: 153px;
+    padding-left: 5px;
+}
+#box .zhuce1{
+    height: 20px;
+    margin-left: 117px;
+    margin-top: 10px;
+    width: 286px;
+}
+#box .zhuce1 .z-r{
+    float: right;
+}
+#box .deng{
+    width: 285px;
+    height: 44px;
+    background-color: #35A9E3;
+    margin-left: 117px;
+    margin-top: 10px;
+}
+#box .deng a{
+    text-align: center;
+    line-height: 44px;
+    color: #fff;
+    font-size: 20px;
+    margin-left: 114px;
+}

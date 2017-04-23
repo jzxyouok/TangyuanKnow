@@ -3,17 +3,64 @@
 
 {% block title %}注册 - MeetBot{% endblock %}
 
+{% block head %}
+{{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='zhuce.css') }}">
+    <script>
+        window.onload = function(){
+            var txt = document.getElementById("txt");
+            var txt1 = document.getElementById("txt1");
+            txt.onfocus=function(){
+                //alert("hah");
+                if(txt.value == "邮箱"){
+                    txt.value="";
+                    txt.style.size="22px";
+                    txt.style.color="#333";
+                }
+            }
+            txt.onblur = function(){
+                if(txt.value == ""){
+                    txt.value ="邮箱";
+                    txt.style.color="#ccc"
+                }
+            }
+            txt1.onfocus=function(){
+                //alert("hah");
+                if(txt1.value == "密码"){
+                    txt1.value="";
+                    txt1.style.size="22px";
+                    txt1.style.color="#333";
+                }
+            }
+            txt1.onblur = function(){
+                if(txt1.value == ""){
+                    txt1.value ="密码";
+                    txt1.style.color="#ccc"
+                }
+            }
+        }
+    </script>
+{% endblock %}
+
 {% block page_content %}
-<div class="page-header">
-    <h1>注册</h1>
-</div>
-<div class="col-md-4">
-    {{ wtf.quick_form(form) }}
-</div>
-<p>
-    已有帐号？
-    <a href="{{ url_for('auth.login') }}">
-       点击登录
-    </a>
-</p>
+<div class="zhuce">
+<div class="zhuce1">
+<form action="" method="post" class="form" role="form">
+    {{ form.hidden_tag() }}
+    <div class="form-group  required">
+     <input class="form-control" placeholder="输入您的邮箱" id="email" name="email" required="" type="text" value="" />
+    </div>
+    <div class="form-group  required">
+     <input class="form-control" id="nickname" placeholder="用户名" name="nickname" required="" type="text" value="" />
+    </div>
+    <div class="form-group  required">
+     <input class="form-control" id="password" name="password" placeholder="密码" required="" type="password" value="" />
+    </div>
+    <div class="form-group  required">
+     <input class="form-control" id="password2" name="password2"  placeholder="确认密码（请再次输入您设置的密码）" required="" type="password" value="" />
+    </div>
+     <input class="ti btn btn-default" id="submit" name="submit" type="submit" value="注册" />
+   </form>
+  </div>
+  </div>
 {% endblock %}
