@@ -24,6 +24,9 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="/">Home</a>
+                {% if current_user.is_administrator() %}
+                    <li><a href="{{ url_for("role_auth.admin") }}">身份审核[Admin]</a></li>
+                {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_authenticated %}
