@@ -14,7 +14,7 @@
         <div class="post-content">
             <div class="post-body">
                 <a href="{{ url_for('main.question', id=question.id) }}">
-                    {{ question.body_html | safe }}
+                    {{ question.title | safe }}
                 </a>
             </div>
             <div class="post-footer">
