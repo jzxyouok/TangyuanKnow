@@ -8,6 +8,14 @@
     <img class="img-rounded profile-thumbnail" src="{{ user.gravatar(size=256) }}">
     <div class="profile-header">
         <h1>{{ user.nickname }}</h1>
+        {% if user.is_student() %}
+            <span class="badge">学生认证</span>
+        {% elif user.is_teacher() %}
+            <span class="badge">教师认证</span>
+        {% else %}
+            <span class="badge">未认证</span>
+        {% endif %}
+        <br>
         {% if user.name or user.location %}
         <p>
             {% if user.name %}{{ user.name }}<br>{% endif %}

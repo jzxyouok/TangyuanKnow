@@ -58,6 +58,7 @@ def student_auth():
                 db.session.commit()
                 flash('身份认证审核成功')
                 send_email(current_user.email, '身份认证审核成功', 'role_auth/email/yes_stu', user=current_user)
+                return redirect(url_for('main.index'))
             else:
                 flash('身份认证审核失败')
                 send_email(current_user.email, '身份认证审核被驳回', 'role_auth/email/no', user=current_user)
