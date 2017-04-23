@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf%}
+
+{% block title %}身份认证 - 唐院知乎{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    {% if current_user.is_verified() %}
+        <h1>您已通过{% if current_user.is_student() %}学生{% else %}教师{% endif %}认证</h1>
+    {% else %}
+        <h1>身份认证</h1>
+    {% endif %}
+</div>
+<div>
+    {% if current_user.is_verified() %}
+        <p>您已通过认证</p>
+        <p>真实姓名: {{ current_user.real_name }}</p>
+        <p>身份: {{ current_user.vrole.name }}</p>
+        {% if current_user.is_student() %}
+            <p>学号：{{ current_user.stu_number }}</p>
+        {% endif %}
+    {% else %}
+        <h2><a href="{{ url_for('role_auth.student_auth') }}">申请学生认证</a></h2>
+        <h2><a href="{{ url_for('role_auth.teacher_auth') }}">申请教师认证</a></h2>
+    {% endif %}
+</div>
+{% endblock %}

@@ -7,33 +7,18 @@ import os
 from . import role_auth
 from .. import photos, qiniu_store, db
 from ..email import send_email
-from .forms import UploadForm, StudentAuthForm
+from .forms import UploadForm, StudentAuthForm, TeacherAuthForm
 from flask import Flask, render_template, current_app, redirect, flash, url_for, request
 from flask_login import current_user, login_required
 from ..decorators import permission_required, admin_required
 from ..models import User, VRole
+import tsxyScore
 
 
-@role_auth.route('/upload-file', methods=['GET', 'POST'])
-@admin_required  # 测试使用
-def upload_file():
-    form = UploadForm()
-    if form.validate_on_submit():
-        ret, info = qiniu_store.save(form.photo.data)
-        if ret is not None:
-            file_url = qiniu_store.url(ret['key'])
-        else:
-            print info
-            file_url = '#'
-    else:
-        file_url = None
-    return render_template('role_auth/upload.html', form=form, file_url=file_url)
-
-
-@role_auth.route('/upload', methods=['GET', 'POST'])
+@role_auth.route('/teacher', methods=['GET', 'POST'])
 @login_required
-def upload():
-    form = StudentAuthForm()
+def teacher_auth():
+    form = TeacherAuthForm()
     id_url, stu_url = None, None
     if not current_user.is_verified() and current_user.photos_uploaded:
         # 仅当未认证且已经提交了证明图片时才显示这些图片
@@ -46,7 +31,6 @@ def upload():
             # id_url = qiniu_store.url(id_ret['key'])
             # stu_url = qiniu_store.url(stu_ret['key'])
             current_user.real_name = form.real_name.data
-            current_user.stu_number = form.stu_number.data
             current_user.photo_stu = stu_ret['key']
             current_user.photo_idcard = id_ret['key']
             current_user.photos_uploaded = True
@@ -59,14 +43,34 @@ def upload():
     return render_template('role_auth/index.html', form=form, id_url=id_url, stu_url=stu_url)
 
 
+@role_auth.route('/student', methods=['GET', 'POST'])
+@login_required
+def student_auth():
+    form = StudentAuthForm()
+    if form.validate_on_submit():
+        try:
+            if tsxyScore.is_tsxy_stu(form.stu_number.data, form.stu_password.data):
+                current_user.real_name = form.real_name.data
+                current_user.stu_number = form.stu_number.data
+                current_user.photos_uploaded = False
+                current_user.vrole = VRole.query.filter_by(name='student').first()
+                db.session.add(current_user)
+                db.session.commit()
+                flash('身份认证审核成功')
+                send_email(current_user.email, '身份认证审核成功', 'role_auth/email/yes_stu', user=current_user)
+            else:
+                flash('身份认证审核失败')
+                send_email(current_user.email, '身份认证审核被驳回', 'role_auth/email/no', user=current_user)
+        except (ValueError, RuntimeError) as e:
+            flash('身份认证审核失败')
+            send_email(current_user.email, '身份认证审核被驳回', 'role_auth/email/no', user=current_user)
+    return render_template('role_auth/index.html', form=form)
+
+
 @role_auth.route('/')
 @login_required
 def index():
-    if current_user.is_student():
-        return 'Hi, Student!'
-    elif current_user.is_teacher():
-        return 'Hi, Teacher!'
-    return redirect(url_for('role_auth.upload'))
+    return render_template('role_auth/welcome.html', current_user=current_user)
 
 
 @role_auth.route('/admin')
