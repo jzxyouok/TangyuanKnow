@@ -24,7 +24,7 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="/">Home</a>
-                {% if not current_user.is_verified() %}
+                {% if current_user.is_authenticated and not current_user.is_verified() %}
                     <li><a href="{{ url_for("role_auth.index") }}">身份认证</a></li>
                 {% endif %}
                 {% if current_user.is_administrator() %}
