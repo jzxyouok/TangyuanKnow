@@ -39,7 +39,7 @@ def teacher_auth():
             flash('上传成功,请耐心等待管理员审核.')
         else:
             flash('上传有误!')
-        return redirect(url_for('role_auth.upload'))
+        return redirect(url_for('role_auth.teacher_auth'))
     return render_template('role_auth/index.html', form=form, id_url=id_url, stu_url=stu_url)
 
 

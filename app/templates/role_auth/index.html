@@ -5,7 +5,7 @@
 
 {% block page_content %}
 <div class="page-header">
-    <h1>身份认证！</h1>
+    <h1>身份认证</h1>
 </div>
 
 <div class="container">
@@ -14,16 +14,16 @@
     <div></div>
         {{ wtf.quick_form(form) }}
     {% elif current_user.is_verified() %}
-        <b>您已通过认证</b>
-        <b>真实姓名: {{ current_user.real_name }}</b>
-        <b>身份: {{ current_user.vrole.name }}</b>
+        <p>您已通过认证</p>
+        <p>真实姓名: {{ current_user.real_name }}</p>
+        <p>身份: {{ current_user.vrole.name }}</p>
     {% else %}
-        <b>您的申请正在审核中</b>
+        <p>您的申请正在审核中</p>
         {% if current_user.real_name %}
-            <b>真实姓名: {{ current_user.real_name }}</b>
+            <p>真实姓名: {{ current_user.real_name }}</p>
         {% endif %}
         {% if current_user.stu_number %}
-            <b>学号: {{ current_user.stu_number }}</b>
+            <p>学号: {{ current_user.stu_number }}</p>
         {% endif %}
         {% if stu_url %}
             <img src="{{ stu_url }}" height="300">
