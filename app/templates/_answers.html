@@ -20,12 +20,17 @@
              </button>
 		</div>
 		<div class="col-md-8">
-			来自话题： <span class="label label-primary">文字标签</span>
+			<!-- 来自话题： <span class="label label-primary">文字标签</span> -->
 			<h3 class="text-left">
                 <a class="text-muted" href="{{ url_for('main.question', id=answer.q_answer.id) }}"> {{ answer.q_answer.title }}</a>
 			</h3>
 			<p class="text-left">
-				{{ answer.answerer.nickname }} <span class="badge">学生认证</span>
+				{{ answer.answerer.nickname }}
+                {% if answer.answerer.is_student() %}
+                    <span class="badge">学生认证</span>
+                {% elif answer.answerer.is_teacher() %}
+                    <span class="badge">教师认证</span>
+                {% endif %}
                 {% if answer.answerer.about_me  %}
                     ， {{ answer.answerer.about_me }}
                 {% endif %}

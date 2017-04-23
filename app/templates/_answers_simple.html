@@ -22,6 +22,11 @@
                             <a href="{{ url_for('main.user', nickname=answer.answerer.nickname) }}">
                                 <strong>{{ answer.answerer.nickname }}</strong>
                             </a>
+                            {% if answer.answerer.is_student() %}
+                                <span class="badge">学生认证</span>
+                            {% elif answer.answerer.is_teacher() %}
+                                <span class="badge">教师认证</span>
+                            {% endif %}
                             {% if answer.answerer.about_me  %}
                                 ,<small>{{ answer.answerer.about_me }}</small>
                             {% endif %}
